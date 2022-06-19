@@ -1,13 +1,36 @@
+/* eslint-disable no-param-reassign */
 import 'bootstrap';
+import getWatchedState from './getWatchedState.js';
+import validate from './validate.js';
+
+const submitHandle = (e, state) => {
+  e.preventDefault();
+  const formEl = document.querySelector('form');
+  const inputEl = formEl.querySelector('[name="url"]');
+  inputEl.focus();
+  const form = new FormData(formEl);
+  const url = form.get('url');
+  validate(url, state);
+};
+
+const inputChangeHandle = (state) => {
+  state.formError = null;
+};
 
 const app = () => {
-  const element = document.getElementById('main');
+  const initialState = {
+    feeds: [],
+    formError: null,
+  };
 
-  const html = `
-<form action="" class="rss-form text-body"><div class="row"><div class="col"><div class="form-floating"><input id="url-input" autofocus="" required="" name="url" aria-label="url" class="form-control w-100" placeholder="ссылка RSS" autocomplete="off"> <label for="url-input">Ссылка RSS</label></div></div><div class="col-auto"><button type="submit" aria-label="add" class="h-100 btn btn-lg btn-primary px-sm-5">Добавить</button></div></div></form>
-`;
+  const state = getWatchedState(initialState);
 
-  element.innerHTML = html;
+  const formEl = document.querySelector('form');
+  const inputEl = formEl.querySelector('[name="url"]');
+  inputEl.focus();
+
+  formEl.addEventListener('submit', (e) => submitHandle(e, state));
+  inputEl.addEventListener('input', () => inputChangeHandle(state));
 };
 
 export default app;
