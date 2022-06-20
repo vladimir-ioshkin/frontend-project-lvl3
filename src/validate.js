@@ -1,6 +1,9 @@
 /* eslint-disable no-param-reassign */
 import * as yup from 'yup';
 import { setLocale } from 'yup';
+import { uniqueId } from 'lodash';
+import getPosts from './getPosts.js';
+import parseXML from './parser.js';
 
 setLocale({
   string: {
@@ -11,16 +14,37 @@ setLocale({
   },
 });
 
+const getUrls = (feeds) => feeds.map(({ link }) => link);
+
 const validate = (url, state, i18nInstance) => {
-  const schema = yup.string().url().required().notOneOf(state.feeds);
+  const urls = getUrls(state.feeds);
+  const schema = yup.string().url().required().notOneOf(urls);
 
   schema.validate(url, { abortEarly: false })
     .then(() => {
-      state.feeds.push(url);
+      state.isLoading = true;
+      return getPosts(url);
+    })
+    .then((response) => {
+      const content = response.data.contents;
+      const parsedContent = parseXML(content, url);
+      const { feed, posts } = parsedContent;
+      const feedId = uniqueId('feed_');
+      const feedWithId = { ...feed, id: feedId };
+      const postsWithId = posts.map((post) => ({ ...post, id: uniqueId('post_'), feedId }));
+      state.isLoading = false;
+      state.successMessage = i18nInstance.t('succsess');
+      state.feeds.unshift(feedWithId);
+      state.posts = [...state.posts, ...postsWithId];
     })
     .catch((err) => {
+      if (err.isParsingError) {
+        state.errorMessage = i18nInstance.t('errors.invalidRSS');
+        return;
+      }
+
       const error = err.errors[0];
-      state.formError = i18nInstance.t(error);
+      state.errorMessage = i18nInstance.t(error);
     });
 };
 

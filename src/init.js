@@ -16,14 +16,18 @@ const submitHandle = (e, state, i18nInstance) => {
 };
 
 const inputChangeHandle = (state) => {
-  state.formError = null;
+  state.errorMessage = null;
+  state.successMessage = null;
 };
 
 const app = () => {
   const initialState = {
     lng: 'ru',
     feeds: [],
-    formError: null,
+    posts: [],
+    errorMessage: null,
+    successMessage: null,
+    isLoading: false,
   };
 
   const i18nInstance = i18n.createInstance();

@@ -1,22 +1,21 @@
 import onChange from 'on-change';
-
-const formEl = document.querySelector('form');
-const inputEl = formEl.querySelector('[name="url"]');
-const feedbackEl = document.querySelector('.feedback');
+import render from './render.js';
 
 const getWatchedState = (state) => onChange(state, (path, value) => {
   switch (path) {
     case 'feeds':
-      formEl.reset();
+      render.renderFeeds(value);
       break;
-    case 'formError':
-      if (value) {
-        inputEl.classList.add('is-invalid');
-        feedbackEl.textContent = value;
-        return;
-      }
-      inputEl.classList.remove('is-invalid');
-      feedbackEl.textContent = '';
+    case 'posts':
+      render.renderPosts(value);
+      break;
+    case 'errorMessage':
+      render.renderErrorMessage(value);
+      break;
+    case 'successMessage':
+      render.renderSuccessMessage(value);
+      break;
+    case 'isLoading':
       break;
     default:
       throw new Error('invalid case');
