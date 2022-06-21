@@ -1,5 +1,7 @@
 const postsList = document.querySelector('.posts ul');
 const feedsList = document.querySelector('.feeds ul');
+const postsCard = document.querySelector('.posts .card');
+const feedsCard = document.querySelector('.feeds .card');
 const formEl = document.querySelector('form');
 const inputEl = formEl.querySelector('[name="url"]');
 const submitBtn = formEl.querySelector('button');
@@ -8,6 +10,8 @@ const feedbackEl = document.querySelector('.feedback');
 const render = {
   renderFeeds(feeds) {
     formEl.reset();
+
+    feedsList.innerHTML = '';
     feeds.forEach(({ title, description }) => {
       const li = document.createElement('li');
       const h3 = document.createElement('h3');
@@ -25,9 +29,16 @@ const render = {
       li.append(p);
       feedsList.append(li);
     });
+
+    if (feeds.length) {
+      feedsCard.classList.remove('d-none');
+    } else {
+      feedsCard.classList.add('d-none');
+    }
   },
 
   renderPosts(posts) {
+    postsList.innerHTML = '';
     posts.forEach(({ id, title, link }) => {
       const li = document.createElement('li');
       const a = document.createElement('a');
@@ -51,6 +62,12 @@ const render = {
       li.append(btn);
       postsList.append(li);
     });
+
+    if (posts.length) {
+      postsCard.classList.remove('d-none');
+    } else {
+      postsCard.classList.add('d-none');
+    }
   },
 
   renderErrorMessage(text) {

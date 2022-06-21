@@ -35,7 +35,7 @@ const validate = (url, state, i18nInstance) => {
       state.isLoading = false;
       state.successMessage = i18nInstance.t('succsess');
       state.feeds.unshift(feedWithId);
-      state.posts = [...state.posts, ...postsWithId];
+      state.posts = [...postsWithId, ...state.posts];
     })
     .catch((err) => {
       if (err.isParsingError) {

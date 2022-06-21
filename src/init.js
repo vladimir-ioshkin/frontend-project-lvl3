@@ -3,6 +3,7 @@ import i18n from 'i18next';
 import getWatchedState from './getWatchedState.js';
 import validate from './validate.js';
 import resources from './locales/index.js';
+import updatePosts from './updatePosts.js';
 
 const formEl = document.querySelector('form');
 const inputEl = formEl.querySelector('[name="url"]');
@@ -41,6 +42,8 @@ const app = () => {
 
       formEl.addEventListener('submit', (e) => submitHandle(e, state, i18nInstance));
       inputEl.addEventListener('input', () => inputChangeHandle(state));
+
+      setTimeout(() => updatePosts(state), 5000);
     });
 };
 
