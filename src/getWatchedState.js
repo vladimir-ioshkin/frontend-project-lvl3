@@ -7,7 +7,13 @@ const getWatchedState = (state) => onChange(state, (path, value) => {
       render.renderFeeds(value);
       break;
     case 'posts':
-      render.renderPosts(value);
+      render.renderPosts(value, state.visitedLinkIds);
+      break;
+    case 'watchedPostId':
+      render.renderModalContent(value, state.posts);
+      break;
+    case 'visitedLinkIds':
+      render.setLinkVisited([...value].slice(-1));
       break;
     case 'errorMessage':
       render.renderErrorMessage(value);

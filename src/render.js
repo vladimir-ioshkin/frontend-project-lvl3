@@ -6,8 +6,26 @@ const formEl = document.querySelector('form');
 const inputEl = formEl.querySelector('[name="url"]');
 const submitBtn = formEl.querySelector('button');
 const feedbackEl = document.querySelector('.feedback');
+const modalEl = document.querySelector('#modal');
+const modalTitle = modalEl.querySelector('.modal-title');
+const modalDescription = modalEl.querySelector('.modal-body');
+const modalReadMore = modalEl.querySelector('.full-article');
 
 const render = {
+  renderModalContent(postId, posts) {
+    const post = posts.find(({ id }) => id === postId);
+
+    modalTitle.textContent = post.title;
+    modalDescription.textContent = post.description;
+    modalReadMore.setAttribute('href', post.link);
+  },
+
+  setLinkVisited(postId) {
+    const linkEl = postsList.querySelector(`[data-id="${postId}"]`);
+    linkEl.classList.remove('fw-bold');
+    linkEl.classList.add('fw-normal');
+  },
+
   renderFeeds(feeds) {
     formEl.reset();
 
@@ -37,7 +55,7 @@ const render = {
     }
   },
 
-  renderPosts(posts) {
+  renderPosts(posts, visitedLinkIds) {
     postsList.innerHTML = '';
     posts.forEach(({ id, title, link }) => {
       const li = document.createElement('li');
@@ -46,7 +64,8 @@ const render = {
 
       li.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-start', 'border-0', 'border-end-0');
 
-      a.classList.add('fw-bold');
+      const linkClass = visitedLinkIds.has(id) ? 'fw-normal' : 'fw-bold';
+      a.classList.add(linkClass);
       a.target = '_blank';
       a.href = link;
       a.dataset.id = id;
