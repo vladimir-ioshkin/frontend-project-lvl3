@@ -1,13 +1,13 @@
 import onChange from 'on-change';
 import render from './render.js';
 
-const getWatchedState = (state) => onChange(state, (path, value) => {
+const getWatchedState = (state, i18nInstance) => onChange(state, (path, value) => {
   switch (path) {
     case 'feeds':
       render.renderFeeds(value);
       break;
     case 'posts':
-      render.renderPosts(value, state.visitedLinkIds);
+      render.renderPosts(value, state.visitedLinkIds, i18nInstance.t('btnText'));
       break;
     case 'watchedPostId':
       render.renderModalContent(value, state.posts);

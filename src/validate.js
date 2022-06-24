@@ -8,6 +8,7 @@ import parseXML from './parser.js';
 setLocale({
   string: {
     url: 'errors.invalidUrl',
+    required: 'errors.noUrl',
   },
   mixed: {
     notOneOf: 'errors.duplicatedUrl',
@@ -40,6 +41,10 @@ const validate = (url, state, i18nInstance) => {
     .catch((err) => {
       if (err.isParsingError) {
         state.errorMessage = i18nInstance.t('errors.invalidRSS');
+        return;
+      }
+      if (err.code === 'ERR_NETWORK') {
+        state.errorMessage = i18nInstance.t('errors.networkError');
         return;
       }
 

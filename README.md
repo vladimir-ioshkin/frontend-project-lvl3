@@ -6,21 +6,7 @@
 ### Maintainability codeclimate status:
 [![Maintainability](https://api.codeclimate.com/v1/badges/db94cb511063efaad567/maintainability)](https://codeclimate.com/github/vladimir-ioshkin/frontend-project-lvl3/maintainability)
 
-### Demo
-```
-https://frontend-project-lvl3-rho-ecru.vercel.app/
-```
+# RSS-Агрегатор
+RSS-Агрегатор – это сервис для агрегации RSS-потоков, с помощью которых удобно читать разнообразные источники, например, блоги. Он позволяет добавлять неограниченное количество RSS-лент, сам их обновляет и добавляет новые записи в общий поток.
 
-You can run
-
-```
-npm run build
-```
-
-or
-
-```
-yarn build
-```
-
-to bundle your application
+### [Ссылка на демо](https://frontend-project-lvl3-rho-ecru.vercel.app/)

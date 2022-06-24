@@ -53,7 +53,7 @@ const app = () => {
     resources,
   })
     .then(() => {
-      const state = getWatchedState(initialState);
+      const state = getWatchedState(initialState, i18nInstance);
       inputEl.focus();
 
       formEl.addEventListener('submit', (e) => submitHandle(e, state, i18nInstance));

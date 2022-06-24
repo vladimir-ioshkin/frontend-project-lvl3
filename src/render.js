@@ -55,7 +55,7 @@ const render = {
     }
   },
 
-  renderPosts(posts, visitedLinkIds) {
+  renderPosts(posts, visitedLinkIds, btnText) {
     postsList.innerHTML = '';
     posts.forEach(({ id, title, link }) => {
       const li = document.createElement('li');
@@ -73,7 +73,7 @@ const render = {
 
       btn.classList.add('btn', 'btn-outline-primary', 'btn-sm');
       btn.dataset.id = id;
-      btn.textContent = 'Просмотр';
+      btn.textContent = btnText;
       btn.dataset.bsToggle = 'modal';
       btn.dataset.bsTarget = '#modal';
 
