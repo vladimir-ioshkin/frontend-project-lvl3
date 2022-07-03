@@ -1,3 +1,5 @@
+import onChange from 'on-change';
+
 const postsList = document.querySelector('.posts ul');
 const feedsList = document.querySelector('.feeds ul');
 const postsCard = document.querySelector('.posts .card');
@@ -120,4 +122,32 @@ const render = {
   },
 };
 
-export default render;
+const getWatchedState = (state, i18nInstance) => onChange(state, (path, value) => {
+  switch (path) {
+    case 'feeds':
+      render.renderFeeds(value);
+      break;
+    case 'posts':
+      render.renderPosts(value, state.visitedLinkIds, i18nInstance.t('btnText'));
+      break;
+    case 'watchedPostId':
+      render.renderModalContent(value, state.posts);
+      break;
+    case 'visitedLinkIds':
+      render.setLinkVisited([...value].slice(-1));
+      break;
+    case 'errorMessage':
+      render.renderErrorMessage(value);
+      break;
+    case 'successMessage':
+      render.renderSuccessMessage(value);
+      break;
+    case 'isLoading':
+      render.renderSuccessMessage(value ? i18nInstance.t('loading') : '');
+      break;
+    default:
+      throw new Error('invalid case');
+  }
+});
+
+export default getWatchedState;

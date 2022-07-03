@@ -7,6 +7,7 @@ export default {
       noUrl: 'Не должно быть пустым',
       networkError: 'Ошибка сети',
     },
+    loading: 'Идет загрузка...',
     succsess: 'RSS успешно загружен',
     btnText: 'Просмотр',
   },
