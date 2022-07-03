@@ -113,11 +113,14 @@ const render = {
     feedbackEl.textContent = '';
   },
 
-  renderLoadingState(isLoading) {
+  renderLoadingState(isLoading, text) {
     if (isLoading) {
+      render.renderSuccessMessage(text);
       submitBtn.setAttribute('disabled', 'true');
+      inputEl.setAttribute('disabled', 'true');
     } else {
       submitBtn.removeAttribute('disabled');
+      inputEl.removeAttribute('disabled');
     }
   },
 };
@@ -143,7 +146,7 @@ const getWatchedState = (state, i18nInstance) => onChange(state, (path, value) =
       render.renderSuccessMessage(value);
       break;
     case 'isLoading':
-      render.renderSuccessMessage(value ? i18nInstance.t('loading') : '');
+      render.renderLoadingState(value, i18nInstance.t('loading'));
       break;
     default:
       throw new Error('invalid case');
