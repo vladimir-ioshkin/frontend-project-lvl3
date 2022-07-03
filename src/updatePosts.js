@@ -23,8 +23,7 @@ const updatePosts = (state) => {
         state.posts = [...newPostsWithIds, ...state.posts];
       });
     })
-    .catch(() => {})
-    .then(() => setTimeout(() => updatePosts(state), 5000));
+    .finally(() => setTimeout(() => updatePosts(state), 5000));
 };
 
 export default updatePosts;
