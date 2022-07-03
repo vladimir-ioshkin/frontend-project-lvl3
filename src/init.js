@@ -4,7 +4,7 @@ import * as yup from 'yup';
 import { uniqueId, differenceBy } from 'lodash';
 import { setLocale } from 'yup';
 import i18n from 'i18next';
-import getWatchedState from './render';
+import getWatchedState from './render.js';
 import resources from './locales/index.js';
 import parseXML from './parser.js';
 
@@ -27,7 +27,7 @@ const getUrls = (feeds) => feeds.map(({ link }) => link);
 const getProxyUrl = (url) => {
   const path = 'https://allorigins.hexlet.app/get';
   const params = new URLSearchParams({
-    url: encodeURIComponent(url),
+    url,
     disableCache: true,
   });
   const proxyUrl = new URL(`${path}?${params}`);
@@ -76,7 +76,6 @@ const validate = (url, state, i18nInstance) => {
       const feedId = uniqueId('feed_');
       const feedWithId = { ...feed, id: feedId };
       const postsWithId = posts.map((post) => ({ ...post, id: uniqueId('post_'), feedId }));
-      state.isLoading = false;
       state.successMessage = i18nInstance.t('succsess');
       state.feeds.unshift(feedWithId);
       state.posts = [...postsWithId, ...state.posts];
@@ -93,6 +92,9 @@ const validate = (url, state, i18nInstance) => {
 
       const error = err.errors[0];
       state.errorMessage = i18nInstance.t(error);
+    })
+    .finally(() => {
+      state.isLoading = false;
     });
 };
 

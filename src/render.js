@@ -143,7 +143,8 @@ const getWatchedState = (state, i18nInstance) => onChange(state, (path, value) =
       render.renderSuccessMessage(value);
       break;
     case 'isLoading':
-      render.renderSuccessMessage(value ? i18nInstance.t('loading') : '');
+      if (value) render.renderSuccessMessage(i18nInstance.t('loading'));
+      render.renderLoadingState(value);
       break;
     default:
       throw new Error('invalid case');
