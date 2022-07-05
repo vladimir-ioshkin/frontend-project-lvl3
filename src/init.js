@@ -8,10 +8,20 @@ import getWatchedState from './render.js';
 import resources from './locales/index.js';
 import parseXML from './parser.js';
 
-const formEl = document.querySelector('form');
-const inputEl = formEl.querySelector('[name="url"]');
-const modalEl = document.querySelector('#modal');
-const postsList = document.querySelector('.posts ul');
+const elements = {
+  formEl: document.querySelector('form'),
+  inputEl: document.querySelector('[name="url"]'),
+  modalEl: document.querySelector('#modal'),
+  postsList: document.querySelector('.posts ul'),
+  feedsList: document.querySelector('.feeds ul'),
+  postsCard: document.querySelector('.posts .card'),
+  feedsCard: document.querySelector('.feeds .card'),
+  submitBtn: document.querySelector('button[type="submit"]'),
+  feedbackEl: document.querySelector('.feedback'),
+  modalTitle: document.querySelector('.modal-title'),
+  modalDescription: document.querySelector('.modal-body'),
+  modalReadMore: document.querySelector('.full-article'),
+};
 
 setLocale({
   string: {
@@ -100,8 +110,8 @@ const validate = (url, state, i18nInstance) => {
 
 const submitHandle = (e, state, i18nInstance) => {
   e.preventDefault();
-  inputEl.focus();
-  const form = new FormData(formEl);
+  elements.inputEl.focus();
+  const form = new FormData(elements.formEl);
   const url = form.get('url');
   validate(url, state, i18nInstance);
 };
@@ -141,13 +151,13 @@ const app = () => {
     resources,
   })
     .then(() => {
-      const state = getWatchedState(initialState, i18nInstance);
-      inputEl.focus();
+      const state = getWatchedState(initialState, i18nInstance, elements);
+      elements.inputEl.focus();
 
-      formEl.addEventListener('submit', (e) => submitHandle(e, state, i18nInstance));
-      inputEl.addEventListener('input', () => inputChangeHandle(state));
-      modalEl.addEventListener('show.bs.modal', (e) => setWatchedPostId(e, state));
-      postsList.addEventListener('click', (e) => setLinkVisited(e, state));
+      elements.formEl.addEventListener('submit', (e) => submitHandle(e, state, i18nInstance));
+      elements.inputEl.addEventListener('input', () => inputChangeHandle(state));
+      elements.modalEl.addEventListener('show.bs.modal', (e) => setWatchedPostId(e, state));
+      elements.postsList.addEventListener('click', (e) => setLinkVisited(e, state));
 
       setTimeout(() => updatePosts(state), 5000);
     });

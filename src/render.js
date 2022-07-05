@@ -1,37 +1,25 @@
+/* eslint-disable no-param-reassign */
 import onChange from 'on-change';
 
-const postsList = document.querySelector('.posts ul');
-const feedsList = document.querySelector('.feeds ul');
-const postsCard = document.querySelector('.posts .card');
-const feedsCard = document.querySelector('.feeds .card');
-const formEl = document.querySelector('form');
-const inputEl = formEl.querySelector('[name="url"]');
-const submitBtn = formEl.querySelector('button');
-const feedbackEl = document.querySelector('.feedback');
-const modalEl = document.querySelector('#modal');
-const modalTitle = modalEl.querySelector('.modal-title');
-const modalDescription = modalEl.querySelector('.modal-body');
-const modalReadMore = modalEl.querySelector('.full-article');
-
 const render = {
-  renderModalContent(postId, posts) {
+  renderModalContent(postId, posts, elements) {
     const post = posts.find(({ id }) => id === postId);
 
-    modalTitle.textContent = post.title;
-    modalDescription.textContent = post.description;
-    modalReadMore.setAttribute('href', post.link);
+    elements.modalTitle.textContent = post.title;
+    elements.modalDescription.textContent = post.description;
+    elements.modalReadMore.setAttribute('href', post.link);
   },
 
-  setLinkVisited(postId) {
-    const linkEl = postsList.querySelector(`[data-id="${postId}"]`);
+  setLinkVisited(postId, elements) {
+    const linkEl = elements.postsList.querySelector(`[data-id="${postId}"]`);
     linkEl.classList.remove('fw-bold');
     linkEl.classList.add('fw-normal');
   },
 
-  renderFeeds(feeds) {
-    formEl.reset();
+  renderFeeds(feeds, elements) {
+    elements.formEl.reset();
 
-    feedsList.innerHTML = '';
+    elements.feedsList.innerHTML = '';
     feeds.forEach(({ title, description }) => {
       const li = document.createElement('li');
       const h3 = document.createElement('h3');
@@ -47,18 +35,18 @@ const render = {
 
       li.append(h3);
       li.append(p);
-      feedsList.append(li);
+      elements.feedsList.append(li);
     });
 
     if (feeds.length) {
-      feedsCard.classList.remove('d-none');
+      elements.feedsCard.classList.remove('d-none');
     } else {
-      feedsCard.classList.add('d-none');
+      elements.feedsCard.classList.add('d-none');
     }
   },
 
-  renderPosts(posts, visitedLinkIds, btnText) {
-    postsList.innerHTML = '';
+  renderPosts(posts, visitedLinkIds, btnText, elements) {
+    elements.postsList.innerHTML = '';
     posts.forEach(({ id, title, link }) => {
       const li = document.createElement('li');
       const a = document.createElement('a');
@@ -66,8 +54,7 @@ const render = {
 
       li.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-start', 'border-0', 'border-end-0');
 
-      const linkClass = visitedLinkIds.has(id) ? 'fw-normal' : 'fw-bold';
-      a.classList.add(linkClass);
+      a.classList.add('fw-bold');
       a.target = '_blank';
       a.href = link;
       a.dataset.id = id;
@@ -81,75 +68,76 @@ const render = {
 
       li.append(a);
       li.append(btn);
-      postsList.append(li);
+      elements.postsList.append(li);
+      if (visitedLinkIds.has(id)) this.setLinkVisited(id, elements);
     });
 
     if (posts.length) {
-      postsCard.classList.remove('d-none');
+      elements.postsCard.classList.remove('d-none');
     } else {
-      postsCard.classList.add('d-none');
+      elements.postsCard.classList.add('d-none');
     }
   },
 
-  renderErrorMessage(text) {
+  renderErrorMessage(text, elements) {
     if (text) {
-      inputEl.classList.add('is-invalid');
-      feedbackEl.classList.add('text-danger');
-      feedbackEl.textContent = text;
+      elements.inputEl.classList.add('is-invalid');
+      elements.feedbackEl.classList.add('text-danger');
+      elements.feedbackEl.textContent = text;
       return;
     }
-    feedbackEl.classList.remove('text-danger');
-    inputEl.classList.remove('is-invalid');
-    feedbackEl.textContent = '';
+    elements.feedbackEl.classList.remove('text-danger');
+    elements.inputEl.classList.remove('is-invalid');
+    elements.feedbackEl.textContent = '';
   },
 
-  renderSuccessMessage(text) {
+  renderSuccessMessage(text, elements) {
     if (text) {
-      feedbackEl.classList.add('text-success');
-      feedbackEl.textContent = text;
+      elements.feedbackEl.classList.add('text-success');
+      elements.feedbackEl.textContent = text;
       return;
     }
-    feedbackEl.classList.remove('text-success');
-    feedbackEl.textContent = '';
+    elements.feedbackEl.classList.remove('text-success');
+    elements.feedbackEl.textContent = '';
   },
 
-  renderLoadingState(isLoading, text) {
+  renderLoadingState(isLoading, text, elements) {
     if (isLoading) {
-      render.renderSuccessMessage(text);
-      submitBtn.setAttribute('disabled', 'true');
-      inputEl.setAttribute('disabled', 'true');
+      elements.feedbackEl.textContent = text;
+      elements.submitBtn.setAttribute('disabled', 'true');
+      elements.inputEl.setAttribute('disabled', 'true');
     } else {
-      submitBtn.removeAttribute('disabled');
-      inputEl.removeAttribute('disabled');
+      elements.submitBtn.removeAttribute('disabled');
+      elements.inputEl.removeAttribute('disabled');
     }
   },
 };
 
-const getWatchedState = (state, i18nInstance) => onChange(state, (path, value) => {
+const getWatchedState = (state, i18nInstance, elements) => onChange(state, (path, value) => {
   switch (path) {
     case 'feeds':
-      render.renderFeeds(value);
+      render.renderFeeds(value, elements);
       break;
     case 'posts':
-      render.renderPosts(value, state.visitedLinkIds, i18nInstance.t('btnText'));
+      render.renderPosts(value, state.visitedLinkIds, i18nInstance.t('btnText'), elements);
       break;
     case 'watchedPostId':
-      render.renderModalContent(value, state.posts);
+      render.renderModalContent(value, state.posts, elements);
       break;
     case 'visitedLinkIds':
-      render.setLinkVisited([...value].slice(-1));
+      render.setLinkVisited([...value].slice(-1), elements);
       break;
     case 'errorMessage':
-      render.renderErrorMessage(value);
+      render.renderErrorMessage(value, elements);
       break;
     case 'successMessage':
-      render.renderSuccessMessage(value);
+      render.renderSuccessMessage(value, elements);
       break;
     case 'isLoading':
-      render.renderLoadingState(value, i18nInstance.t('loading'));
+      render.renderLoadingState(value, i18nInstance.t('loading'), elements);
       break;
     default:
-      throw new Error('invalid case');
+      throw new Error(`Invalid case: "${path}"`);
   }
 });
 
