@@ -8,31 +8,6 @@ import getWatchedState from './render.js';
 import resources from './locales/index.js';
 import parseXML from './parser.js';
 
-const elements = {
-  formEl: document.querySelector('form'),
-  inputEl: document.querySelector('[name="url"]'),
-  modalEl: document.querySelector('#modal'),
-  postsList: document.querySelector('.posts ul'),
-  feedsList: document.querySelector('.feeds ul'),
-  postsCard: document.querySelector('.posts .card'),
-  feedsCard: document.querySelector('.feeds .card'),
-  submitBtn: document.querySelector('button[type="submit"]'),
-  feedbackEl: document.querySelector('.feedback'),
-  modalTitle: document.querySelector('.modal-title'),
-  modalDescription: document.querySelector('.modal-body'),
-  modalReadMore: document.querySelector('.full-article'),
-};
-
-setLocale({
-  string: {
-    url: 'errors.invalidUrl',
-    required: 'errors.noUrl',
-  },
-  mixed: {
-    notOneOf: 'errors.duplicatedUrl',
-  },
-});
-
 const getUrls = (feeds) => feeds.map(({ link }) => link);
 const getProxyUrl = (url) => {
   const path = 'https://allorigins.hexlet.app/get';
@@ -108,7 +83,7 @@ const validate = (url, state, i18nInstance) => {
     });
 };
 
-const submitHandle = (e, state, i18nInstance) => {
+const submitHandle = (e, state, i18nInstance, elements) => {
   e.preventDefault();
   elements.inputEl.focus();
   const form = new FormData(elements.formEl);
@@ -134,6 +109,31 @@ const setLinkVisited = (e, state) => {
 };
 
 const app = () => {
+  const elements = {
+    formEl: document.querySelector('form'),
+    inputEl: document.querySelector('[name="url"]'),
+    modalEl: document.querySelector('#modal'),
+    postsList: document.querySelector('.posts ul'),
+    feedsList: document.querySelector('.feeds ul'),
+    postsCard: document.querySelector('.posts .card'),
+    feedsCard: document.querySelector('.feeds .card'),
+    submitBtn: document.querySelector('button[type="submit"]'),
+    feedbackEl: document.querySelector('.feedback'),
+    modalTitle: document.querySelector('.modal-title'),
+    modalDescription: document.querySelector('.modal-body'),
+    modalReadMore: document.querySelector('.full-article'),
+  };
+
+  setLocale({
+    string: {
+      url: 'errors.invalidUrl',
+      required: 'errors.noUrl',
+    },
+    mixed: {
+      notOneOf: 'errors.duplicatedUrl',
+    },
+  });
+
   const initialState = {
     lng: 'ru',
     feeds: [],
@@ -152,9 +152,8 @@ const app = () => {
   })
     .then(() => {
       const state = getWatchedState(initialState, i18nInstance, elements);
-      elements.inputEl.focus();
 
-      elements.formEl.addEventListener('submit', (e) => submitHandle(e, state, i18nInstance));
+      elements.formEl.addEventListener('submit', (e) => submitHandle(e, state, i18nInstance, elements));
       elements.inputEl.addEventListener('input', () => inputChangeHandle(state));
       elements.modalEl.addEventListener('show.bs.modal', (e) => setWatchedPostId(e, state));
       elements.postsList.addEventListener('click', (e) => setLinkVisited(e, state));
