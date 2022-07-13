@@ -45,7 +45,7 @@ const updatePosts = (state) => {
     .finally(() => setTimeout(() => updatePosts(state), 5000));
 };
 
-const getFeed = (url, state) => {
+const processUrl = (url, state) => {
   const urls = getUrls(state.feeds);
   const schema = yup.string().url().required().notOneOf(urls);
 
@@ -88,7 +88,7 @@ const submitHandle = (e, state, elements) => {
   elements.inputEl.focus();
   const form = new FormData(elements.formEl);
   const url = form.get('url');
-  getFeed(url, state);
+  processUrl(url, state);
 };
 
 const inputChangeHandle = (state) => {
