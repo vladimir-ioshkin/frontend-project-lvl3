@@ -45,7 +45,7 @@ const updatePosts = (state) => {
     .finally(() => setTimeout(() => updatePosts(state), 5000));
 };
 
-const validate = (url, state, i18nInstance) => {
+const getFeed = (url, state) => {
   const urls = getUrls(state.feeds);
   const schema = yup.string().url().required().notOneOf(urls);
 
@@ -61,39 +61,39 @@ const validate = (url, state, i18nInstance) => {
       const feedId = uniqueId('feed_');
       const feedWithId = { ...feed, id: feedId };
       const postsWithId = posts.map((post) => ({ ...post, id: uniqueId('post_'), feedId }));
-      state.successMessage = i18nInstance.t('succsess');
+      state.isSuccess = true;
       state.feeds.unshift(feedWithId);
       state.posts = [...postsWithId, ...state.posts];
     })
     .catch((err) => {
       if (err.isParsingError) {
-        state.errorMessage = i18nInstance.t('errors.invalidRSS');
+        state.errorMessageCode = 'errors.invalidRSS';
         return;
       }
       if (err.code === 'ERR_NETWORK') {
-        state.errorMessage = i18nInstance.t('errors.networkError');
+        state.errorMessageCode = 'errors.networkError';
         return;
       }
 
       const error = err.errors[0];
-      state.errorMessage = i18nInstance.t(error);
+      state.errorMessageCode = error;
     })
     .finally(() => {
       state.isLoading = false;
     });
 };
 
-const submitHandle = (e, state, i18nInstance, elements) => {
+const submitHandle = (e, state, elements) => {
   e.preventDefault();
   elements.inputEl.focus();
   const form = new FormData(elements.formEl);
   const url = form.get('url');
-  validate(url, state, i18nInstance);
+  getFeed(url, state);
 };
 
 const inputChangeHandle = (state) => {
-  state.errorMessage = null;
-  state.successMessage = null;
+  state.errorMessageCode = null;
+  state.isSuccess = false;
 };
 
 const setWatchedPostId = (e, state) => {
@@ -140,8 +140,8 @@ const app = () => {
     posts: [],
     watchedPostId: null,
     visitedLinkIds: new Set(),
-    errorMessage: null,
-    successMessage: null,
+    errorMessageCode: null,
+    isSuccess: false,
     isLoading: false,
   };
 
@@ -153,7 +153,7 @@ const app = () => {
     .then(() => {
       const state = getWatchedState(initialState, i18nInstance, elements);
 
-      elements.formEl.addEventListener('submit', (e) => submitHandle(e, state, i18nInstance, elements));
+      elements.formEl.addEventListener('submit', (e) => submitHandle(e, state, elements));
       elements.inputEl.addEventListener('input', () => inputChangeHandle(state));
       elements.modalEl.addEventListener('show.bs.modal', (e) => setWatchedPostId(e, state));
       elements.postsList.addEventListener('click', (e) => setLinkVisited(e, state));

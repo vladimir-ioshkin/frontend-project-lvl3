@@ -8,7 +8,7 @@ export default {
       networkError: 'Ошибка сети',
     },
     loading: 'Идет загрузка...',
-    succsess: 'RSS успешно загружен',
+    success: 'RSS успешно загружен',
     btnText: 'Просмотр',
   },
 };

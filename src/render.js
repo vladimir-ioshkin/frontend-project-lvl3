@@ -45,7 +45,7 @@ const render = {
     }
   },
 
-  renderPosts(posts, visitedLinkIds, btnText, elements) {
+  renderPosts(posts, visitedLinkIds, elements, i18nInstance) {
     elements.postsList.innerHTML = '';
     posts.forEach(({ id, title, link }) => {
       const li = document.createElement('li');
@@ -62,7 +62,7 @@ const render = {
 
       btn.classList.add('btn', 'btn-outline-primary', 'btn-sm');
       btn.dataset.id = id;
-      btn.textContent = btnText;
+      btn.textContent = i18nInstance.t('btnText');
       btn.dataset.bsToggle = 'modal';
       btn.dataset.bsTarget = '#modal';
 
@@ -79,11 +79,11 @@ const render = {
     }
   },
 
-  renderErrorMessage(text, elements) {
-    if (text) {
+  renderErrorMessage(code, elements, i18nInstance) {
+    if (code) {
       elements.inputEl.classList.add('is-invalid');
       elements.feedbackEl.classList.add('text-danger');
-      elements.feedbackEl.textContent = text;
+      elements.feedbackEl.textContent = i18nInstance.t(code);
       return;
     }
     elements.feedbackEl.classList.remove('text-danger');
@@ -91,19 +91,19 @@ const render = {
     elements.feedbackEl.textContent = '';
   },
 
-  renderSuccessMessage(text, elements) {
-    if (text) {
+  renderSuccessMessage(value, elements, i18nInstance) {
+    if (value) {
       elements.feedbackEl.classList.add('text-success');
-      elements.feedbackEl.textContent = text;
+      elements.feedbackEl.textContent = i18nInstance.t('success');
       return;
     }
     elements.feedbackEl.classList.remove('text-success');
     elements.feedbackEl.textContent = '';
   },
 
-  renderLoadingState(isLoading, text, elements) {
+  renderLoadingState(isLoading, elements, i18nInstance) {
     if (isLoading) {
-      elements.feedbackEl.textContent = text;
+      elements.feedbackEl.textContent = i18nInstance.t('loading');
       elements.submitBtn.setAttribute('disabled', 'true');
       elements.inputEl.setAttribute('disabled', 'true');
     } else {
@@ -119,7 +119,7 @@ const getWatchedState = (state, i18nInstance, elements) => onChange(state, (path
       render.renderFeeds(value, elements);
       break;
     case 'posts':
-      render.renderPosts(value, state.visitedLinkIds, i18nInstance.t('btnText'), elements);
+      render.renderPosts(value, state.visitedLinkIds, elements, i18nInstance);
       break;
     case 'watchedPostId':
       render.renderModalContent(value, state.posts, elements);
@@ -127,14 +127,14 @@ const getWatchedState = (state, i18nInstance, elements) => onChange(state, (path
     case 'visitedLinkIds':
       render.setLinkVisited([...value].slice(-1), elements);
       break;
-    case 'errorMessage':
-      render.renderErrorMessage(value, elements);
+    case 'errorMessageCode':
+      render.renderErrorMessage(value, elements, i18nInstance);
       break;
-    case 'successMessage':
-      render.renderSuccessMessage(value, elements);
+    case 'isSuccess':
+      render.renderSuccessMessage(value, elements, i18nInstance);
       break;
     case 'isLoading':
-      render.renderLoadingState(value, i18nInstance.t('loading'), elements);
+      render.renderLoadingState(value, elements, i18nInstance);
       break;
     default:
       throw new Error(`Invalid case: "${path}"`);
