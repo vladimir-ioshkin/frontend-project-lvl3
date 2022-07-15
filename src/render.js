@@ -79,37 +79,32 @@ const render = {
     }
   },
 
-  renderErrorMessage(code, elements, i18nInstance) {
-    if (code) {
-      elements.inputEl.classList.add('is-invalid');
-      elements.feedbackEl.classList.add('text-danger');
-      elements.feedbackEl.textContent = i18nInstance.t(code);
+  renderMessage(code, elements, i18nInstance) {
+    elements.inputEl.classList = 'form-control w-100';
+    elements.feedbackEl.classList = ['feedback m-0 position-absolute small'];
+    elements.submitBtn.removeAttribute('disabled');
+    elements.inputEl.removeAttribute('disabled');
+
+    if (code === null) {
+      elements.feedbackEl.textContent = ' ';
       return;
     }
-    elements.feedbackEl.classList.remove('text-danger');
-    elements.inputEl.classList.remove('is-invalid');
-    elements.feedbackEl.textContent = '';
-  },
 
-  renderSuccessMessage(value, elements, i18nInstance) {
-    if (value) {
-      elements.feedbackEl.classList.add('text-success');
-      elements.feedbackEl.textContent = i18nInstance.t('success');
-      return;
-    }
-    elements.feedbackEl.classList.remove('text-success');
-    elements.feedbackEl.textContent = '';
-  },
+    elements.feedbackEl.textContent = i18nInstance.t(code);
 
-  renderLoadingState(isLoading, elements, i18nInstance) {
-    if (isLoading) {
-      elements.feedbackEl.textContent = i18nInstance.t('loading');
+    if (code === 'loading') {
       elements.submitBtn.setAttribute('disabled', 'true');
       elements.inputEl.setAttribute('disabled', 'true');
-    } else {
-      elements.submitBtn.removeAttribute('disabled');
-      elements.inputEl.removeAttribute('disabled');
+      return;
     }
+
+    if (code === 'success') {
+      elements.feedbackEl.classList.add('text-success');
+      return;
+    }
+
+    elements.inputEl.classList.add('is-invalid');
+    elements.feedbackEl.classList.add('text-danger');
   },
 };
 
@@ -127,14 +122,8 @@ const getWatchedState = (state, i18nInstance, elements) => onChange(state, (path
     case 'visitedLinkIds':
       render.setLinkVisited([...value].slice(-1), elements);
       break;
-    case 'errorMessageCode':
-      render.renderErrorMessage(value, elements, i18nInstance);
-      break;
-    case 'isSuccess':
-      render.renderSuccessMessage(value, elements, i18nInstance);
-      break;
-    case 'isLoading':
-      render.renderLoadingState(value, elements, i18nInstance);
+    case 'messageCode':
+      render.renderMessage(value, elements, i18nInstance);
       break;
     default:
       throw new Error(`Invalid case: "${path}"`);

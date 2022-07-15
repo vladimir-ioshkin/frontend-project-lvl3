@@ -45,13 +45,17 @@ const updatePosts = (state) => {
     .finally(() => setTimeout(() => updatePosts(state), 5000));
 };
 
-const processUrl = (url, state) => {
-  const urls = getUrls(state.feeds);
+const validate = (url, feeds) => {
+  const urls = getUrls(feeds);
   const schema = yup.string().url().required().notOneOf(urls);
 
-  schema.validate(url, { abortEarly: false })
+  return schema.validate(url, { abortEarly: false });
+};
+
+const processUrl = (url, state) => {
+  validate(url, state.feeds)
     .then(() => {
-      state.isLoading = true;
+      state.messageCode = 'loading';
       return getPosts(url);
     })
     .then((response) => {
@@ -61,25 +65,22 @@ const processUrl = (url, state) => {
       const feedId = uniqueId('feed_');
       const feedWithId = { ...feed, id: feedId };
       const postsWithId = posts.map((post) => ({ ...post, id: uniqueId('post_'), feedId }));
-      state.isSuccess = true;
+      state.messageCode = 'success';
       state.feeds.unshift(feedWithId);
       state.posts = [...postsWithId, ...state.posts];
     })
     .catch((err) => {
       if (err.isParsingError) {
-        state.errorMessageCode = 'errors.invalidRSS';
+        state.messageCode = 'errors.invalidRSS';
         return;
       }
       if (err.code === 'ERR_NETWORK') {
-        state.errorMessageCode = 'errors.networkError';
+        state.messageCode = 'errors.networkError';
         return;
       }
 
       const error = err.errors[0];
-      state.errorMessageCode = error;
-    })
-    .finally(() => {
-      state.isLoading = false;
+      state.messageCode = error;
     });
 };
 
@@ -92,8 +93,7 @@ const submitHandle = (e, state, elements) => {
 };
 
 const inputChangeHandle = (state) => {
-  state.errorMessageCode = null;
-  state.isSuccess = false;
+  state.messageCode = null;
 };
 
 const setWatchedPostId = (e, state) => {
@@ -140,9 +140,7 @@ const app = () => {
     posts: [],
     watchedPostId: null,
     visitedLinkIds: new Set(),
-    errorMessageCode: null,
-    isSuccess: false,
-    isLoading: false,
+    messageCode: null,
   };
 
   const i18nInstance = i18n.createInstance();
